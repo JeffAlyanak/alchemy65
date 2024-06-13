@@ -55,7 +55,7 @@ function memcallback(address)
   end
   --check if pc / prg is in the callback table
   address = tonumber(address)
-  local prg = emu.convertAddress(address, emu.memType.nesDebug)
+  local prg = emu.convertAddress(address, emu.memType.nesMemory)
   if prg ~= -1 and prg ~= nil then
     if breakpoints["prg-" .. tostring(prg)] ~= nil then
         connection:send("isPaused true\n")
@@ -257,11 +257,11 @@ function alchemy65()
       local label_address_prg = -1
       local label_value = ""
       if label_address ~= -1 then
-        label_address_prg = emu.convertAddress(label_address, emu.memType.nesDebug)
-        label_value = emu.read(label_address, emu.memType.cpuDebug)
+        label_address_prg = emu.convertAddress(label_address, emu.memType.nesMemory)
+        label_value = emu.read(label_address, emu.memType.nesDebug)
         local offset = 1
         while offset < count do
-          label_value = label_value .. " " .. emu.read(label_address + offset, emu.memType.cpuDebug)
+          label_value = label_value .. " " .. emu.read(label_address + offset, emu.memType.nesDebug)
           offset = offset + 1
         end
       end
