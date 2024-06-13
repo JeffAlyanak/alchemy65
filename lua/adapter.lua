@@ -55,7 +55,7 @@ function memcallback(address)
   end
   --check if pc / prg is in the callback table
   address = tonumber(address)
-  local prg = emu.getPrgRomOffset(address)
+  local prg = emu.convertAddress(address, emu.memType.nesDebug)
   if prg ~= -1 and prg ~= nil then
     if breakpoints["prg-" .. tostring(prg)] ~= nil then
         connection:send("isPaused true\n")
@@ -244,8 +244,8 @@ function alchemy65()
     end
     if command == "getcpuvars" then
       local state = emu.getState()
-      local pc_prg = emu.getPrgRomOffset(state.cpu.pc)
-      connection:send("cpuvars " .. tostring(state.cpu.status) .. " " .. tostring(state.cpu.a) .. " " .. tostring(state.cpu.x) .. " " .. tostring(state.cpu.y) .. " " .. tostring(state.cpu.pc) .. " " .. tostring(state.cpu.sp) .. " " .. tostring(pc_prg) .. "\n")
+      local pc_prg = emu.convertAddress(state['cpu.pc'], emu.memType.nesMemory)
+      connection:send("cpuvars " .. tostring(state['cpu.ps']) .. " " .. tostring(state['cpu.a']) .. " " .. tostring(state['cpu.x']) .. " " .. tostring(state['cpu.y']) .. " " .. tostring(state['cpu.pc']) .. " " .. tostring(state['cpu.sp']) .. " " .. tostring(pc_prg) .. "\n")
       --log("cpuvars")
       return true -- keep processing messages
     end
@@ -257,7 +257,7 @@ function alchemy65()
       local label_address_prg = -1
       local label_value = ""
       if label_address ~= -1 then
-        label_address_prg = emu.getPrgRomOffset(label_address)
+        label_address_prg = emu.convertAddress(label_address, emu.memType.nesDebug)
         label_value = emu.read(label_address, emu.memType.cpuDebug)
         local offset = 1
         while offset < count do
