@@ -38,16 +38,16 @@ function onEndFrame()
   end
 end
 
-function onWhilePaused()
-  if isPaused ~= true then
-    isPaused = true
-    if connection ~= nil then
-      connection:send("isPaused true\n")
-    end
-  end
-  while alchemy65() do
-  end
-end
+-- function onWhilePaused()
+--   if isPaused ~= true then
+--     isPaused = true
+--     if connection ~= nil then
+--       connection:send("isPaused true\n")
+--     end
+--   end
+--   while alchemy65() do
+--   end
+-- end
 
 function memcallback(address)
   if delayCommand ~= nil then
@@ -78,7 +78,7 @@ function clearbreakpoints()
   for k,ab in pairs(breakpoints) do
     local address = ab.a
     --log("clearing " .. tostring(k) .. " " .. tostring(address))
-    emu.removeMemoryCallback(ab.b,emu.memCallbackType.cpuExec,ab.a)
+    emu.removeMemoryCallback(ab.b,emu.callbackType.exec,ab.a)
     breakpoints[k] = nil
   end
 end
@@ -87,7 +87,7 @@ function setbreakpoint(cpuaddress, prgaddress, id)
   local ab = {}
   ab.i = id
   ab.a = cpuaddress
-  ab.b = emu.addMemoryCallback(memcallback, emu.memCallbackType.cpuExec, cpuaddress)
+  ab.b = emu.addMemoryCallback(memcallback, emu.callbackType.exec, cpuaddress)
   local k = "cpu-" .. tostring(cpuaddress)
   if prgaddress ~= nil then
     k = "prg-" .. tostring(prgaddress)
@@ -225,19 +225,19 @@ function alchemy65()
       return
     end
     if command == "next" then
-      emu.execute(1, emu.executeCountType.cpuInstructions)
+      emu.step(1, emu.stepType.step)
       connection:send("stepped\n")
       -- log("stepInto")
       return
     end
     if command == "stepOver" then
-      emu.stepOver()
+      emu.step(1, emu.stepType.stepOver)
       connection:send("stepped\n")
       -- log("stepOver")
       return
     end
     if command == "stepOut" then
-      emu.stepOut()
+      emu.step(1, emu.stepType.stepOut)
       connection:send("stepped\n")
       -- log("stepOut")
       return
@@ -313,7 +313,7 @@ else
   -- emu.addEventCallback(onInit, emu.eventType.endFrame)
   -- emu.addEventCallback(onInit, emu.eventType.whilePaused)
   emu.addEventCallback(onEndFrame, emu.eventType.endFrame)
-  emu.addEventCallback(onWhilePaused, emu.eventType.whilePaused)
+  -- emu.addEventCallback(onWhilePaused, emu.eventType.whilePaused)
 
   log("listening on " .. PORT)
   -- while true do
